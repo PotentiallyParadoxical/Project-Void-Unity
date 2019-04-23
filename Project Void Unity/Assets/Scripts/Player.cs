@@ -68,7 +68,7 @@ public class Player : MonoBehaviour
             transform.Rotate(0, x, 0);
             cameraz.transform.Rotate(y, 0, 0);
         }
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             Force();
         }
