@@ -1,0 +1,2 @@
+The lighting may looks bad because many 3D render engines such as unity use baking to genorate lighting some of their lighting data. Due to low FPS during development automatic baking has been disabled. To manualy bake(fix bad lighting) please go to Window->Rendering->LightingSettings and press the "Genorate Lighting" button in the bottom right corner.
+-Paradox
