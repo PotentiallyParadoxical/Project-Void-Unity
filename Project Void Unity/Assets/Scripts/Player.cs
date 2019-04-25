@@ -10,12 +10,12 @@ public class Player : MonoBehaviour
     float x;
     float y;
     public float sensetivity = 2;
-    public float speed = 1;
+    public float speed = 800;
     public Transform bulletSpawn;
     public GameObject bulletPrefab;
     private CapsuleCollider Colid;
     public float jump = 3;
-    public bool jumper;
+    public bool touchingGround;
     private float timer;
     // Use this for initialization
     void Start()
@@ -41,21 +41,41 @@ public class Player : MonoBehaviour
 
         //This does the calculation on how fast and how much to move the player
         //The Axises "Horizontal" and "Vertical" are linked to W,A,S,D and arrow keys in the editor
-        velocity = new Vector3(Input.GetAxisRaw("Horizontal") * speed, 0, Input.GetAxisRaw("Vertical")).normalized * speed;
+        velocity = new Vector3(
+            Input.GetAxisRaw("Horizontal"),
+            0,
+            Input.GetAxisRaw("Vertical")) * speed * Time.deltaTime;
         //Actually moves the players using the input from the keyboard
-        rig.MovePosition(rig.position + transform.forward * velocity.z * Time.fixedDeltaTime);
-        rig.MovePosition(rig.position + transform.right * velocity.x * Time.fixedDeltaTime);
 
         //A really bad system of crouching, will be fixed when player models with animations are added
         if (Input.GetKey(KeyCode.LeftShift))
         {
             //Halves the player's height
             Colid.height = 1;
+            //Moves the player's position without affecting velocity
+            if (touchingGround == true)
+            {
+                rig.MovePosition(rig.position + transform.right * velocity.x / 100);
+                rig.MovePosition(rig.position + transform.forward * velocity.z / 100);
+            }
         }
         else
         {
             //resets the player's height
             Colid.height = 2;
+            //Moves the player normally(using velocity)
+            if (touchingGround == true)
+            {
+                //moving
+                //rig.AddForce(transform.forward * velocity.z * Time.fixedDeltaTime, ForceMode.Impulse);
+                //rig.AddForce(transform.right * velocity.x * Time.fixedDeltaTime, ForceMode.Impulse);
+
+                //Apparently you can only modify velocity once
+                Vector3 motion = (transform.forward * velocity.z);
+                motion += (transform.right * velocity.x);
+
+                rig.velocity = motion;
+            }
         }
         //Responsible of rotation lock
         //Best not to mess with this the current version of the game as there is only one gravity source
@@ -72,10 +92,9 @@ public class Player : MonoBehaviour
         {
             Force();
         }
-        if (Input.GetKeyDown(KeyCode.Space) && jumper)
+        if (Input.GetKeyDown(KeyCode.Space) && touchingGround)
         {
             rig.AddForce(Vector3.up * jump, ForceMode.Impulse);
-            jumper = false;
         }
         if (timer > 60)
         {
@@ -87,7 +106,6 @@ public class Player : MonoBehaviour
     void OnCollisionEnter(Collision col)
     {
         //This tells the game the player can jump again
-        jumper = true;
         //This is for testing purposes
         if (col.transform.tag == "Finish")
         {
@@ -98,6 +116,14 @@ public class Player : MonoBehaviour
         {
             rig.constraints = RigidbodyConstraints.None;
         }
+    }
+    private void OnCollisionStay(Collision collision)
+    {
+        touchingGround = true;
+    }
+    void OnCollisionExit(Collision col)
+    {
+        touchingGround = false;
     }
 
     //Will be modified to act as a interaction key, In this version it will create a projectile

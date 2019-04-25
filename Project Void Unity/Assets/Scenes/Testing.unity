@@ -251,12 +251,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sensetivity: 2
-  speed: 5
+  speed: 400
   bulletSpawn: {fileID: 332697668}
   bulletPrefab: {fileID: 1243760895055713660, guid: 7206e7d895e5e8a4b935c6cbb5dad322,
     type: 3}
-  jump: 3
-  jumper: 0
+  jump: 4
+  touchingGround: 0
 --- !u!54 &891818870
 Rigidbody:
   m_ObjectHideFlags: 0
